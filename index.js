@@ -23,6 +23,7 @@ const formatOutput = (output) => {
     return lines.map((line, index) => `${index + 1}: ${line}`).join('\n');
 };
 
+
 const compileAndRun = async (code) => {
     const fileName = 'example.cpp';
     const filePath = path.join(__dirname, fileName);
@@ -48,7 +49,7 @@ const compileAndRun = async (code) => {
 
     // Run the compiled program
     return new Promise((resolve, reject) => {
-        exec(`${fileName.replace('.cpp', '')}`, (error, stdout, stderr) => {
+        exec(`./${fileName.replace('.cpp', '')}`, (error, stdout, stderr) => {
             if (error || stderr) {
                 reject(error || stderr);
                 return;
@@ -75,6 +76,7 @@ app.post('/compile', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
