@@ -15,6 +15,14 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+const formatOutput = (output) => {
+    // Split the output by newlines and remove empty lines
+    const lines = output.split('\n').filter(line => line.trim() !== '');
+
+    // Format the output as an array of lines
+    return lines.map((line, index) => `${index + 1}: ${line}`).join('\n');
+};
+
 const compileAndRun = async (code) => {
     const fileName = 'example.cpp';
     const filePath = path.join(__dirname, fileName);
@@ -40,7 +48,7 @@ const compileAndRun = async (code) => {
 
     // Run the compiled program
     return new Promise((resolve, reject) => {
-        exec(`./${fileName.replace('.cpp', '')}`, (error, stdout, stderr) => {
+        exec(`${fileName.replace('.cpp', '')}`, (error, stdout, stderr) => {
             if (error || stderr) {
                 reject(error || stderr);
                 return;
@@ -58,14 +66,15 @@ app.post('/compile', async (req, res) => {
         if (result.compilationError) {
             res.send(result.compilationError);
         } else {
-            res.send(result);
+            // Format the output
+            const formattedOutput = formatOutput(result);
+            res.send(formattedOutput);
         }
     } catch (error) {
         console.error('Error:', error);
         res.status(500).send('Internal Server Error');
     }
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}/`);
